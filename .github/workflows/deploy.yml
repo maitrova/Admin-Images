@@ -1,0 +1,26 @@
+name: Sync adminuploadeddesigns to VPS
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'adminuploadeddesigns/**'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Sync adminuploadeddesigns to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          port: ${{ secrets.VPS_PORT }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          source: "adminuploadeddesigns"
+          target: "${{ secrets.VPS_PATH }}/"
+          rm: true
