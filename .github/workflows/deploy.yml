@@ -14,13 +14,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Sync adminuploadeddesigns to VPS
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          port: ${{ secrets.VPS_PORT }}
-          password: ${{ secrets.VPS_PASSWORD }}
-          source: "adminuploadeddesigns"
-          target: "${{ secrets.VPS_PATH }}/"
-          rm: true
+      - name: Install sshpass
+        run: sudo apt-get update && sudo apt-get install -y sshpass
+
+      - name: Sync adminuploadeddesigns to VPS with rsync
+        run: |
+          sshpass -p "${{ secrets.VPS_PASSWORD }}" rsync -avz -e "ssh -p ${{ secrets.VPS_PORT }} -o StrictHostKeyChecking=no" \
+            adminuploadeddesigns/ \
+            ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:${{ secrets.VPS_PATH }}/adminuploadeddesigns/
